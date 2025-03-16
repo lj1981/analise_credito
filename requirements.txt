@@ -1,5 +1,4 @@
 pandas
-matplotlib.pyplot
-seaborn
-dash
-plotly
+random
+datetime
+requests
