@@ -1,6 +1,3 @@
-# analise_credito Seu resultado e totalmente ficticio e nem um dos dados e real .
-
-
 **Documento Técnico: Geração de Dataset de Crédito**
 
 ### Introdução
@@ -54,5 +51,11 @@ O dataset gerado contém as seguintes colunas:
 
 ### Conclusão
 Este código permite a geração de um dataset robusto e flexível para análise financeira e previsão de crédito, tornando-se uma ferramenta útil para estudos e desenvolvimento de modelos de machine learning.
+
+
+
+# Seu resultado e totalmente ficticio e nem um dos dados e real .
+
+
 
  
