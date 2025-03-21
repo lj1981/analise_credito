@@ -54,7 +54,7 @@ Este código permite a geração de um dataset robusto e flexível para análise
 
 
 
-- - v. 2 - - 
+- - --  - - - - V. 2 - - -  - - -- -------------------------------------------------------------------------------------------------------------------------------- 
 
 
 **Documento Técnico: Geração de Dataset de Crédito Simulado**
