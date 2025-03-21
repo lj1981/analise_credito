@@ -1,75 +1,104 @@
 import pandas as pd
 import random
-from datetime import datetime, timedelta
 import requests
 
-# Configurações gerais do dataset
-n_linhas = 45000  # Definindo o número de linhas
-ids = [random.randint(10 ** 10, 10 ** 11 - 1) for _ in range(n_linhas)]  # IDs com 11 dígitos
 
-# Função para obter cidades, estados e bairros fictícios
-estados = ["SP", "RJ", "MG", "RS", "BA", "PR", "SC", "PE", "CE", "GO"]
-cidades = {"SP": ["São Paulo", "Campinas", "Santos"],
-           "RJ": ["Rio de Janeiro", "Niterói", "Petrópolis"],
-           "MG": ["Belo Horizonte", "Uberlândia", "Juiz de Fora"],
-           "RS": ["Porto Alegre", "Caxias do Sul", "Pelotas"],
-           "BA": ["Salvador", "Feira de Santana", "Ilhéus"],
-           "PR": ["Curitiba", "Londrina", "Maringá"],
-           "SC": ["Florianópolis", "Joinville", "Blumenau"],
-           "PE": ["Recife", "Olinda", "Caruaru"],
-           "CE": ["Fortaleza", "Caucaia", "Juazeiro do Norte"],
-           "GO": ["Goiânia", "Anápolis", "Aparecida de Goiânia"]}
-bairros = ["Centro", "Zona Sul", "Zona Norte", "Bairro Novo", "Vila Rica"]
+# Função para obter nomes populares do IBGE
+def obter_nomes_ibge():
+    url = "https://servicodados.ibge.gov.br/api/v2/censos/nomes"
+    resposta = requests.get(url)
+    if resposta.status_code == 200:
+        dados = resposta.json()
+        nomes = [item["nome"] for item in dados]
+        return nomes
+    return ["Carlos", "Ana", "Fernanda", "João", "Mariana"]  # Fallback caso a API falhe
 
-# Listas de nomes fictícios
-nomes = ["João Silva", "Maria Souza", "Carlos Oliveira", "Ana Lima", "Fernando Santos", "Juliana Costa"]
 
-# Dados aleatórios
+# Função para obter estados e cidades do IBGE
+def obter_localidades_ibge():
+    estados_url = "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
+    municipios_url = "https://servicodados.ibge.gov.br/api/v1/localidades/municipios"
+
+    estados = {}
+    resposta_estados = requests.get(estados_url)
+    if resposta_estados.status_code == 200:
+        for estado in resposta_estados.json():
+            estados[estado["sigla"]] = []
+
+    resposta_municipios = requests.get(municipios_url)
+    if resposta_municipios.status_code == 200:
+        for municipio in resposta_municipios.json():
+            uf = municipio["microrregiao"]["mesorregiao"]["UF"]["sigla"]
+            if uf in estados:
+                estados[uf].append(municipio["nome"])
+
+    return estados
+
+
+# Lista de sobrenomes fictícios
+sobrenomes = ["Silva", "Souza", "Oliveira", "Lima", "Santos", "Costa", "Almeida", "Mendes", "Gomes", "Xavier"]
+
+# Lista de bairros genéricos
+bairros = ["Centro", "Vila Nova", "Jardim América", "Parque Industrial", "Bela Vista", "Boa Esperança"]
+
+# Obter dados da API IBGE
+nomes_ibge = obter_nomes_ibge()
+localidades = obter_localidades_ibge()
+
+# Configurações do dataset
+n_linhas = 10000  # Número de clientes
+ids = [random.randint(10 ** 10, 10 ** 11 - 1) for _ in range(n_linhas)]
+
+# Gerando os dados
 dados = []
 for _ in range(n_linhas):
     id_cliente = ids.pop()
-    nome_completo = random.choice(nomes)
-    primeiro_nome, ultimo_nome = nome_completo.split()
+    primeiro_nome = random.choice(nomes_ibge).capitalize()
+    ultimo_nome = random.choice(sobrenomes)
+
+    estado = random.choice(list(localidades.keys()))
+    cidade = random.choice(localidades[estado])
+    bairro = random.choice(bairros)
+
     idade = random.randint(18, 60)
     genero = random.choice(["Masculino", "Feminino"])
-    estado = random.choice(estados)
-    cidade = random.choice(cidades[estado])
-    bairro = random.choice(bairros)
-    salario = round(random.uniform(1518, 10000), 2)
-    patrimonio = round(random.uniform(salario * 2, salario * 10), 2)
+    salario = round(random.uniform(1518, 20000), 2)
+    patrimonio = round(random.uniform(salario * 1.5, salario * 12), 2)
 
-    # Simulação dos últimos 3 meses
-    emprestimos = [random.choice([0, round(random.uniform(500, salario * 1.5), 2)]) for _ in range(3)]
-    financiamentos = [random.choice([0, round(random.uniform(500, salario * 2), 2)]) for _ in range(3)]
+    # Probabilidade de pegar crédito
+    prob_pegou_credito = random.random()
+    if prob_pegou_credito < 0.3:
+        emprestimos = [0, 0, 0]
+        financiamentos = [0, 0, 0]
+    else:
+        emprestimos = [random.choice([0, round(random.uniform(500, salario * 1.5), 2)]) for _ in range(3)]
+        financiamentos = [random.choice([0, round(random.uniform(500, salario * 2), 2)]) for _ in range(3)]
+
     parcelas = [e + f for e, f in zip(emprestimos, financiamentos)]
-
-    # Cálculo do score baseado nos valores de empréstimos e financiamentos
     total_credito_utilizado = sum(parcelas) / 3
     percentual_uso = (total_credito_utilizado / salario) * 100 if salario > 0 else 100
 
     if percentual_uso == 0:
-        score = 1000
+        score = random.randint(850, 1000)
     elif percentual_uso <= 10:
         score = random.randint(700, 900)
-    elif percentual_uso <= 15:
+    elif percentual_uso <= 25:
         score = random.randint(599, 699)
-    elif percentual_uso <= 30:
+    elif percentual_uso <= 40:
         score = random.randint(499, 598)
     else:
         score = random.randint(200, 498)
 
-    # Definir status baseado no score
     if score >= 800:
         status = "Excelente"
-    elif score >= 599:
-        status = "Moderado"
-    elif score >= 499:
+    elif score >= 600:
         status = "Bom"
+    elif score >= 500:
+        status = "Moderado"
     else:
         status = "Ruim"
 
-    # Crédito pré-aprovado
-    credito_pre_aprovado = salario - total_credito_utilizado if status == "Excelente" or status == "Bom" else 0
+    credito_pre_aprovado = round(random.uniform(0, salario * 1.5), 2) if status in ["Excelente", "Bom"] else 0
 
     dados.append({
         "ID": id_cliente,
@@ -95,9 +124,6 @@ for _ in range(n_linhas):
 
 # Criar DataFrame
 df_credito = pd.DataFrame(dados)
-
-# Centralizar títulos das colunas
-df_credito.columns = [col.center(20) for col in df_credito.columns]
 
 # Salvar em CSV
 file_path = "dataset_credito_simulado.csv"
