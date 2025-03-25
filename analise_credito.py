@@ -2,7 +2,6 @@ import pandas as pd
 import random
 import requests
 
-
 # Função para obter nomes populares do IBGE
 def obter_nomes_ibge():
     url = "https://servicodados.ibge.gov.br/api/v2/censos/nomes"
@@ -110,12 +109,8 @@ for _ in range(n_linhas):
         "Bairro": bairro,
         "Salário": f"R${salario:,.2f}",
         "Patrimônio": f"R${patrimonio:,.2f}",
-        "Empréstimo_Mês1": f"R${emprestimos[0]:,.2f}",
-        "Empréstimo_Mês2": f"R${emprestimos[1]:,.2f}",
-        "Empréstimo_Mês3": f"R${emprestimos[2]:,.2f}",
-        "Financiamento_Mês1": f"R${financiamentos[0]:,.2f}",
-        "Financiamento_Mês2": f"R${financiamentos[1]:,.2f}",
-        "Financiamento_Mês3": f"R${financiamentos[2]:,.2f}",
+        "Empréstimo": f"R${emprestimos[0]:,.2f}",
+        "Financiamento": f"R${financiamentos[0]:,.2f}",
         "Parcelas_Médias": f"R${total_credito_utilizado:,.2f}",
         "Score": score,
         "Status": status,
