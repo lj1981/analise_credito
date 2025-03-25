@@ -16,8 +16,8 @@ O dataset gerado contém as seguintes colunas:
 - **Bairro**: Bairro de residência
 - **Salário**: Renda mensal do cliente (formatado como moeda)
 - **Patrimônio**: Valor total do patrimônio do cliente (formatado como moeda)
-- **Empréstimos Mês 1, 2 e 3**: Valor do empréstimo tomado em cada um dos últimos três meses (formatado como moeda)
-- **Financiamentos Mês 1, 2 e 3**: Valor financiado pelo cliente nos últimos três meses (formatado como moeda)
+- **Empréstimos**: Valor do empréstimo tomado  (formatado como moeda)
+- **Financiamentos**: Valor financiado pelo cliente  (formatado como moeda)
 - **Parcelas Médias**: Média do valor das parcelas mensais (formatado como moeda)
 - **Score de Crédito**: Pontuação calculada com base no uso do crédito em relação ao salário
 - **Status de Crédito**: Classificação do cliente com base no score:
